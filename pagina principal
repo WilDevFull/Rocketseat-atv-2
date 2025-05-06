@@ -1,0 +1,36 @@
+// src/pages/Home.tsx
+import { useContext } from 'react';
+import { CoffeeContext } from '../contexts/CoffeeContext';
+import { CoffeeCard } from '../components/CoffeeCard';
+import { Cart } from '../components/Cart';
+import { AddressForm } from '../components/AddressForm';
+
+export function Home() {
+  const { coffees } = useContext(CoffeeContext);
+
+  return (
+    <div className="home-container">
+      <div className="intro">
+        <h1>Encontre o café perfeito para qualquer hora do dia</h1>
+        <p>Com o Coffee Delivery você recebe seu café onde estiver, a qualquer hora</p>
+      </div>
+
+      <div className="content">
+        <section className="coffee-list">
+          <h2>Nossos cafés</h2>
+          <div className="list">
+            {coffees.map(coffee => (
+              <CoffeeCard key={coffee.id} coffee={coffee} />
+            ))}
+          </div>
+        </section>
+
+        <section className="checkout">
+          <h2>Complete seu pedido</h2>
+          <AddressForm />
+          <Cart />
+        </section>
+      </div>
+    </div>
+  );
+}
