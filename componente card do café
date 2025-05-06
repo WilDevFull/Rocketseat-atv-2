@@ -1,0 +1,52 @@
+// src/components/CoffeeCard.tsx
+import { useContext, useState } from 'react';
+import { CoffeeContext } from '../contexts/CoffeeContext';
+import { CartContext } from '../contexts/CartContext';
+
+interface CoffeeCardProps {
+  coffee: {
+    id: number;
+    name: string;
+    description: string;
+    price: number;
+    tags: string[];
+    image: string;
+  };
+}
+
+export function CoffeeCard({ coffee }: CoffeeCardProps) {
+  const [quantity, setQuantity] = useState(1);
+  const { addCoffeeToCart } = useContext(CartContext);
+
+  function handleAddToCart() {
+    addCoffeeToCart(coffee.id, quantity);
+    setQuantity(1);
+  }
+
+  return (
+    <div className="coffee-card">
+      <img src={coffee.image} alt={coffee.name} />
+      <div className="tags">
+        {coffee.tags.map(tag => (
+          <span key={tag}>{tag}</span>
+        ))}
+      </div>
+      <h3>{coffee.name}</h3>
+      <p>{coffee.description}</p>
+      <div className="card-footer">
+        <span>R$ {coffee.price.toFixed(2)}</span>
+        <div className="actions">
+          <input 
+            type="number" 
+            min="1" 
+            value={quantity}
+            onChange={(e) => setQuantity(Number(e.target.value))}
+          />
+          <button onClick={handleAddToCart}>
+            <ShoppingCart size={22} weight="fill" />
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
