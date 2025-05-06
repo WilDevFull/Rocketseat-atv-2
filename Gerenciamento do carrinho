@@ -1,0 +1,82 @@
+// src/contexts/CartContext.tsx
+import { createContext, ReactNode, useState, useEffect } from 'react';
+
+interface CartItem {
+  coffeeId: number;
+  quantity: number;
+}
+
+interface CartContextType {
+  cartItems: CartItem[];
+  addCoffeeToCart: (coffeeId: number, quantity: number) => void;
+  changeCartItemQuantity: (coffeeId: number, type: 'increase' | 'decrease') => void;
+  removeCartItem: (coffeeId: number) => void;
+  clearCart: () => void;
+}
+
+export const CartContext = createContext({} as CartContextType);
+
+export function CartProvider({ children }: { children: ReactNode }) {
+  const [cartItems, setCartItems] = useState<CartItem[]>(() => {
+    const storedCart = localStorage.getItem('@CoffeeDelivery:cart');
+    return storedCart ? JSON.parse(storedCart) : [];
+  });
+
+  useEffect(() => {
+    localStorage.setItem('@CoffeeDelivery:cart', JSON.stringify(cartItems));
+  }, [cartItems]);
+
+  function addCoffeeToCart(coffeeId: number, quantity: number) {
+    setCartItems((state) => {
+      const coffeeExists = state.find(item => item.coffeeId === coffeeId);
+      
+      if (coffeeExists) {
+        return state.map(item => 
+          item.coffeeId === coffeeId 
+            ? { ...item, quantity: item.quantity + quantity }
+            : item
+        );
+      } else {
+        return [...state, { coffeeId, quantity }];
+      }
+    });
+  }
+
+  function changeCartItemQuantity(coffeeId: number, type: 'increase' | 'decrease') {
+    setCartItems((state) =>
+      state.map(item => {
+        if (item.coffeeId === coffeeId) {
+          return {
+            ...item,
+            quantity: type === 'increase' 
+              ? item.quantity + 1 
+              : Math.max(1, item.quantity - 1)
+          };
+        }
+        return item;
+      })
+    );
+  }
+
+  function removeCartItem(coffeeId: number) {
+    setCartItems((state) => state.filter(item => item.coffeeId !== coffeeId));
+  }
+
+  function clearCart() {
+    setCartItems([]);
+  }
+
+  return (
+    <CartContext.Provider 
+      value={{ 
+        cartItems, 
+        addCoffeeToCart, 
+        changeCartItemQuantity,
+        removeCartItem,
+        clearCart
+      }}
+    >
+      {children}
+    </CartContext.Provider>
+  );
+}
