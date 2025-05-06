@@ -1,0 +1,23 @@
+// src/components/Header.tsx
+import { useContext } from 'react';
+import { CartContext } from '../contexts/CartContext';
+import { ShoppingCart } from 'phosphor-react';
+
+export function Header() {
+  const { cartItems } = useContext(CartContext);
+  const cartQuantity = cartItems.reduce((total, item) => total + item.quantity, 0);
+
+  return (
+    <header>
+      <div className="logo">
+        <img src="/logo.svg" alt="Coffee Delivery" />
+      </div>
+      <nav>
+        <div className="cart-icon">
+          <ShoppingCart size={22} weight="fill" />
+          {cartQuantity > 0 && <span>{cartQuantity}</span>}
+        </div>
+      </nav>
+    </header>
+  );
+}
