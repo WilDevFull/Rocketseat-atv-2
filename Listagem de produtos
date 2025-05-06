@@ -1,0 +1,37 @@
+// src/contexts/CoffeeContext.tsx
+import { createContext, ReactNode, useState } from 'react';
+
+interface Coffee {
+  id: number;
+  name: string;
+  description: string;
+  price: number;
+  tags: string[];
+  image: string;
+}
+
+interface CoffeeContextType {
+  coffees: Coffee[];
+}
+
+export const CoffeeContext = createContext({} as CoffeeContextType);
+
+export function CoffeeProvider({ children }: { children: ReactNode }) {
+  const [coffees] = useState<Coffee[]>([
+    {
+      id: 1,
+      name: "Expresso Tradicional",
+      description: "O tradicional café feito com água quente e grãos moídos",
+      price: 9.90,
+      tags: ["tradicional"],
+      image: "/coffees/expresso.png"
+    },
+    // ... outros cafés
+  ]);
+
+  return (
+    <CoffeeContext.Provider value={{ coffees }}>
+      {children}
+    </CoffeeContext.Provider>
+  );
+}
