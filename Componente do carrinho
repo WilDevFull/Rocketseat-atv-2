@@ -1,0 +1,54 @@
+// src/components/Cart.tsx
+import { useContext } from 'react';
+import { CartContext } from '../contexts/CartContext';
+import { CoffeeContext } from '../contexts/CoffeeContext';
+
+export function Cart() {
+  const { cartItems, changeCartItemQuantity, removeCartItem } = useContext(CartContext);
+  const { coffees } = useContext(CoffeeContext);
+
+  const cartTotal = cartItems.reduce((total, item) => {
+    const coffee = coffees.find(c => c.id === item.coffeeId);
+    return total + (coffee ? coffee.price * item.quantity : 0);
+  }, 0);
+
+  return (
+    <div className="cart">
+      <h2>Cafés selecionados</h2>
+      <div className="cart-items">
+        {cartItems.map(item => {
+          const coffee = coffees.find(c => c.id === item.coffeeId);
+          if (!coffee) return null;
+          
+          return (
+            <div key={item.coffeeId} className="cart-item">
+              <img src={coffee.image} alt={coffee.name} />
+              <div className="details">
+                <span>{coffee.name}</span>
+                <div className="actions">
+                  <input 
+                    type="number" 
+                    min="1" 
+                    value={item.quantity}
+                    onChange={(e) => changeCartItemQuantity(
+                      item.coffeeId, 
+                      Number(e.target.value) > item.quantity ? 'increase' : 'decrease'
+                    )}
+                  />
+                  <button onClick={() => removeCartItem(item.coffeeId)}>
+                    Remover
+                  </button>
+                </div>
+              </div>
+              <strong>R$ {(coffee.price * item.quantity).toFixed(2)}</strong>
+            </div>
+          );
+        })}
+      </div>
+      <div className="cart-total">
+        <span>Total de itens</span>
+        <span>R$ {cartTotal.toFixed(2)}</span>
+      </div>
+    </div>
+  );
+}
